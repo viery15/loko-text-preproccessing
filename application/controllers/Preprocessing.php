@@ -320,4 +320,85 @@ class Preprocessing extends CI_Controller {
         print_r($kalimat1);
     }
 
+    public function manual(){
+        $kalimat = "nini sangat pengertian";
+        
+        $hasil = $this->removeRedundanChar($kalimat);
+        $hasil = $this->removeNonWord($hasil);
+        $hasil = $this->caseFolding($hasil);
+        $hasil = $this->removeSimbol($hasil);
+        $hasil = $this->removeNumber($hasil);
+        $hasil = $this->removeSpace($hasil);
+        $hasil = $this->removeStopWord($hasil);
+        $input = $this->stemmer($hasil);
+
+        if ($input == "" || $input == " ") {
+            $input = $kalimat;
+        }
+
+        $data_faq = $this->cekFaq();
+
+        $nilai_max = 0;
+        $index_output = 0;
+
+        for ($i=0; $i < count($data_faq); $i++) { 
+            $pertanyaan = $data_faq[$i]['hasil_pertanyaan'];
+            // echo $input . " - " . $pertanyaan . "<br>";
+            $input2 = $this->cek_sinonim($input, $pertanyaan);
+            // echo $input2 . "<br><br>";
+
+            $url = 'https://loko-cosine.herokuapp.com/';
+            $data = array('text1' => $input2, 'text2' => $pertanyaan);
+
+            $options = array(
+                'http' => array(
+                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                    'method'  => 'POST',
+                    'content' => http_build_query($data)
+                )
+            );
+            $context  = stream_context_create($options);
+            $result[$i]['id'] = $data_faq[$i]['id'];
+            $result[$i]['score'] = file_get_contents($url, false, $context);
+            $result[$i]['pertanyaan'] = $data_faq[$i]['pertanyaan'];
+            $result[$i]['jawaban'] = $data_faq[$i]['jawaban'];
+            
+            if ($result[$i]['score'] >= $nilai_max && $result[$i]['score'] != 0) {
+                $nilai_max = $result[$i]['score'];
+                $output[$index_output] = $result[$i];
+                $index_output+=1;
+            }
+            
+        }
+
+        $index_final = 0;
+
+        $status_jadwal = $this->cekJadwal($kalimat);
+
+        if ($status_jadwal) {
+            $final_output[$index_final]['pertanyaan'] = "Menu cek jadwal keberangkatan kereta";
+            $final_output[$index_final]['jawaban'] = "init";
+            $index_final++;
+        }
+
+        if($nilai_max == 0) {
+            $final_output[$index_final]['jawaban'] = "Maaf aku tidak tau maksud kamu";
+        }
+
+        else {
+            if (count($output) >= 1) {
+                for ($i=0; $i < count($output); $i++) { 
+                    if ($output[$i]['score'] >= $nilai_max) {
+                        $final_output[$index_final] = $output[$i];
+                        $index_final++;
+                    }
+                }
+            }
+        }
+
+        // echo count($output);
+
+        echo json_encode($result);
+    }
+
 }
