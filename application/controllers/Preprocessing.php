@@ -396,11 +396,11 @@ class Preprocessing extends CI_Controller {
             }
         }
 
-        // $score = array();
-        // foreach ($result as $key => $row){
-        //     $score[$key] = $row['price'];
-        // }
-        // array_multisort($score, SORT_DESC, $result);
+        $score = array();
+        foreach ($output as $key => $row){
+            $score[$key] = $row['score'];
+        }
+        array_multisort($score, SORT_DESC, $output);
 
         echo json_encode($output);
     }
