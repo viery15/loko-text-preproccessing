@@ -339,7 +339,6 @@ class Preprocessing extends CI_Controller {
         $data_faq = $this->cekFaq();
 
         $nilai_max = 0;
-        $index_output = 0;
 
         for ($i=0; $i < count($data_faq); $i++) { 
             $pertanyaan = $data_faq[$i]['hasil_pertanyaan'];
@@ -365,8 +364,6 @@ class Preprocessing extends CI_Controller {
             
             if ($result[$i]['score'] >= $nilai_max && $result[$i]['score'] != 0) {
                 $nilai_max = $result[$i]['score'];
-                $output[$index_output] = $result[$i];
-                $index_output+=1;
             }
             
         }
@@ -386,23 +383,21 @@ class Preprocessing extends CI_Controller {
         }
 
         else {
-            if (count($output) >= 1) {
-                for ($i=0; $i < count($output); $i++) { 
-                    if ($output[$i]['score'] >= $nilai_max) {
-                        $final_output[$index_final] = $output[$i];
-                        $index_final++;
-                    }
+            for ($i=0; $i < count($result); $i++) { 
+                if ($result[$i]['score'] == $nilai_max) {
+                    $final_output[$index_final] = $result;
+                    $index_final++;
                 }
             }
         }
 
         $score = array();
-        foreach ($output as $key => $row){
+        foreach ($result as $key => $row){
             $score[$key] = $row['score'];
         }
-        array_multisort($score, SORT_DESC, $output);
+        array_multisort($score, SORT_DESC, $result);
 
-        echo json_encode($output);
+        echo json_encode($final_output);
     }
 
 }
