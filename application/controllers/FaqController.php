@@ -103,7 +103,7 @@ class FaqController extends CI_Controller {
     }
 
     public function removeSimbol($kalimat){
-        $simbol = [",", ".", "?", "!", "(", ")","…",'/','%','@'];
+        $simbol = [",", ".", "?", "!", "(", ")","…",'/','%','@','-'];
         
         for ($j=0; $j < count($simbol); $j++) { 
             $kalimat = str_replace($simbol[$j],' ',$kalimat);
