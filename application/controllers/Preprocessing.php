@@ -321,7 +321,7 @@ class Preprocessing extends CI_Controller {
     }
 
     public function manual(){
-        $kalimat = "nini sangat pengertian";
+        $kalimat = $this->input->post('kalimat');
         
         $hasil = $this->removeRedundanChar($kalimat);
         $hasil = $this->removeNonWord($hasil);
@@ -396,7 +396,11 @@ class Preprocessing extends CI_Controller {
             }
         }
 
-        // echo count($output);
+        $score = array();
+        foreach ($result as $key => $row){
+            $score[$key] = $row['price'];
+        }
+        array_multisort($score, SORT_DESC, $result);
 
         echo json_encode($result);
     }
