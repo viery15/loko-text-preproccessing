@@ -402,7 +402,7 @@ class Preprocessing extends CI_Controller {
         // }
         // array_multisort($score, SORT_DESC, $result);
 
-        echo json_encode($result);
+        echo json_encode($output);
     }
 
 }
