@@ -385,7 +385,7 @@ class Preprocessing extends CI_Controller {
         else {
             for ($i=0; $i < count($result); $i++) { 
                 if ($result[$i]['score'] == $nilai_max) {
-                    $final_output[$index_final] = $result;
+                    $final_output[$index_final] = $result[$i];
                     $index_final++;
                 }
             }
